@@ -48,6 +48,9 @@ class FileIO:
 
 # Cool colors for printing in terminal
 class bcolors:
+    '''
+    Class for terminal text colors
+    '''
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
