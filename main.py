@@ -1,8 +1,8 @@
 from fileIO import FileIO
 import tkinter as tks
 from tkinter import filedialog
-
-import time, os
+import pandas as pd
+import os
 from operations import Operations
 
 
@@ -27,7 +27,11 @@ for i in file_list:
     print(f"Processing file: {i}")
     esr = math.esr()
     cap = math.capacitance()
-    print("")
+    df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
+    with pd.ExcelWriter("{}/ESR-C.xlsx".format(load), engine='openpyxl', mode='a') as writer:
+        df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
+
+# print("Analisi completata per tutti i file e grafici creati.")
 
     # print(f"Processing file: {i} with {data.shape[0]} rows and {data.shape[1]} columns")
 

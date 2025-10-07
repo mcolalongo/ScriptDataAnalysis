@@ -18,7 +18,8 @@ class Operations:
         '''
         # look for the number of cycles
         ncycles = self.data['Cycle'].unique()
-        print(f"{bcolors.WARNING}ESR analysis running...{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}ESR Calculations running...{bcolors.ENDC}")
+        self.esr = []
         # filter only rest values
         # rest_data = self.data.loc[self.data['Status'] == 'Rest']
         for i in tqdm(ncycles):
@@ -33,11 +34,11 @@ class Operations:
             self.c_end_rest = self.mid_rest['Voltage'].iloc[-1]
             self.current = abs(self.first_dsch['Current(mA)'].iloc[-1])
             self.esr_value = (self.c_end_rest - self.c_end_dsch)/(self.current/1000) # in Ohm 
-            # print(self.esr_value)
+            self.esr.append(self.esr_value)
 
         print(f"{bcolors.OKGREEN}Success!!!{bcolors.ENDC}")
 
-        return self.esr_value
+        return self.esr
 
 
 
@@ -47,8 +48,8 @@ class Operations:
         Pietro Agola or Alessandro Fabbri
         '''
         ncycles = self.data['Cycle'].unique()
-        print(f"{bcolors.WARNING} Capacitance analysis Running...{bcolors.ENDC}")
-    
+        print(f"{bcolors.WARNING} Capacitance Calculations Running...{bcolors.ENDC}")
+        self.cap = []
         # for i in tqdm(ncycles):
         for i in tqdm(ncycles):
             # filter only discharge values at certain cycle
@@ -68,9 +69,10 @@ class Operations:
             self.cap_end = self.first_dsch['Discharge_Capacity(mAh)'].iloc[-1] # end capacity at the end of the discharge
             self.capacitance = 3600/1000 * (self.cap_end - self.cap_id)/(self.v_id - self.v_end) # C = Q/ΔV
             # above 3600 is s/h and 1000 is from mA to A. We could multiply for 3.6 and done
-            # print(i,self.close_v)
+            self.cap.append(self.capacitance)
         print(f"{bcolors.OKGREEN}Success!!!{bcolors.ENDC}")
-
+        
+        return self.cap
 
 # Cool colors for printing in terminal
 class bcolors:
