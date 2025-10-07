@@ -1,7 +1,7 @@
 from fileIO import FileIO
-import tkinter as tk
+import tkinter as tks
 from tkinter import filedialog
-from tqdm import tqdm
+
 import time, os
 from operations import Operations
 
@@ -11,7 +11,6 @@ load = filedialog.askdirectory(title="Select the folder containing the data file
 # Call the constructor 
 file = FileIO(load)
 file_list = file.read_multiple()
-print(file)
 
 select = input("\n\nSelect the type of analysis you want to perform: \n1. ESR-C\n2. SelfD\n--> ")
 
@@ -24,7 +23,8 @@ else:
 for i in file_list:
     data = FileIO.load_data(file.file_path, i)
     math = Operations(data)
-    math.ESR()
+    # math.esr()
+    math.capacitance()
 
     # print(f"Processing file: {i} with {data.shape[0]} rows and {data.shape[1]} columns")
 
