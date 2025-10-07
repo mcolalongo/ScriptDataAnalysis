@@ -12,19 +12,22 @@ load = filedialog.askdirectory(title="Select the folder containing the data file
 file = FileIO(load)
 file_list = file.read_multiple()
 
-select = input("\n\nSelect the type of analysis you want to perform: \n1. ESR-C\n2. SelfD\n--> ")
+select = input("\n\nSelect the type of analysis you want to perform: \n1. ESR-C\n2. Self-D\n--> ")
 
-if select=="SelfD":
+if select=="Self-D":
     print("At the moment the feature is not available")
 else:
     print("Data Analysis Started")
 
 
+
 for i in file_list:
     data = FileIO.load_data(file.file_path, i)
     math = Operations(data)
-    # math.esr()
-    math.capacitance()
+    print(f"Processing file: {i}")
+    esr = math.esr()
+    cap = math.capacitance()
+    print("")
 
     # print(f"Processing file: {i} with {data.shape[0]} rows and {data.shape[1]} columns")
 

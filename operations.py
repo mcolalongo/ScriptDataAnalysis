@@ -18,6 +18,7 @@ class Operations:
         '''
         # look for the number of cycles
         ncycles = self.data['Cycle'].unique()
+        print(f"{bcolors.WARNING}ESR analysis running...{bcolors.ENDC}")
         # filter only rest values
         # rest_data = self.data.loc[self.data['Status'] == 'Rest']
         for i in tqdm(ncycles):
@@ -34,6 +35,8 @@ class Operations:
             self.esr_value = (self.c_end_rest - self.c_end_dsch)/(self.current/1000) # in Ohm 
             # print(self.esr_value)
 
+        print(f"{bcolors.OKGREEN}Success!!!{bcolors.ENDC}")
+
         return self.esr_value
 
 
@@ -44,9 +47,10 @@ class Operations:
         Pietro Agola or Alessandro Fabbri
         '''
         ncycles = self.data['Cycle'].unique()
-
+        print(f"{bcolors.WARNING} Capacitance analysis Running...{bcolors.ENDC}")
+    
         # for i in tqdm(ncycles):
-        for i in ncycles:
+        for i in tqdm(ncycles):
             # filter only discharge values at certain cycle
             # self.dsch_data = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)]
             # A solid reference point is the column Step_index in the NDAX file. We could use that for referencing First Discharge Cycle and Rest            
@@ -62,13 +66,23 @@ class Operations:
             self.cap_id = self.first_dsch['Discharge_Capacity(mAh)'].iloc[self.close_v_idx] # new initial capacity close to v_ic
             self.v_id = self.first_dsch['Voltage'].iloc[self.close_v_idx] # new initial voltage close to v_ic (voltage computed)               
             self.cap_end = self.first_dsch['Discharge_Capacity(mAh)'].iloc[-1] # end capacity at the end of the discharge
-            self.capacitance = 3600 * (self.cap_end - self.cap_id)/(self.v_id - self.v_end) # C = Q/ΔV
-            print(f"Cycle {i} --> Capacitance: {self.capacitance:.5f} F")
+            self.capacitance = 3600/1000 * (self.cap_end - self.cap_id)/(self.v_id - self.v_end) # C = Q/ΔV
+            # above 3600 is s/h and 1000 is from mA to A. We could multiply for 3.6 and done
             # print(i,self.close_v)
+        print(f"{bcolors.OKGREEN}Success!!!{bcolors.ENDC}")
 
 
-
-        
-
-
-        
+# Cool colors for printing in terminal
+class bcolors:
+    '''
+    Class for terminal text colors
+    '''
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
