@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-class Math:
+class Operations:
 
     def __init__(self, data):
         '''

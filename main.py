@@ -23,7 +23,7 @@ else:
 
 for i in file_list:
     data = FileIO.load_data(file.file_path, i)
-    math = Math(data)
+    math = Operations(data)
     math.ESR()
 
     # print(f"Processing file: {i} with {data.shape[0]} rows and {data.shape[1]} columns")
