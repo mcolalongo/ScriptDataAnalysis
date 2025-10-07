@@ -11,19 +11,8 @@ class FileIO:
         :param file_path: Path to the NDAx folder files.
         '''
         self.file_path = file_path
-
-    def load_data(self):
-        '''
-        Read single data from the NDA file using NewareNDA library.
-        :return: Data read from the NDA file.
-        '''
-        try:
-            # Read single data using NewareNDA library --> Specifically .ndax files
-            data = NewareNDA.NewareNDAx.read_ndax(self.file_path)
-            return data
-        except Exception as e:
-            raise IOError(f"An error occurred while reading the file: {e}")
         
+
     def read_multiple(self):
         '''
         Read multiple data sets from the NDA file using NewareNDA library.
@@ -43,8 +32,21 @@ class FileIO:
             return data_list
         
         except:
-            raise IOError(f"An error occurred while reading the files in the folder")
-        
+            raise IOError(f"An error occurred while reading the files in the folder {self.file_path}")
+
+
+
+    def load_data(self, single_path):
+        '''
+        Read single data from the NDA file using NewareNDA library.
+        :return: Data read from the NDA file.
+        '''
+        try:
+            # Read single data using NewareNDA library --> Specifically .ndax files
+            data = NewareNDA.NewareNDAx.read_ndax("{}/{}".format(self,single_path))
+            return data
+        except:
+            raise IOError(f"An error occurred while reading the file: {single_path}")
 
 # Cool colors for printing in terminal
 class bcolors:
