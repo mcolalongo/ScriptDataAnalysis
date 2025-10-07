@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tqdm import tqdm
 import time, os
-from math import Math
+from operations import Operations
 
 
 # Load the Folder with prompt
