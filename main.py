@@ -12,10 +12,11 @@ load = filedialog.askdirectory(title="Select the folder containing the data file
 file = FileIO(load)
 file_list = file.read_multiple() 
 
-select = input("\n\nSelect the type of analysis you want to perform: \n1. ESR-C\n2. Self-D\n--> ")
+select = input("\n\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n\n--> ")
 
-if select=="Self-D":
+if (select=="2") or (select=="3"):
     print("At the moment the feature is not available")
+    raise SystemExit
 else:
     print("Data Analysis Started")
 
@@ -26,7 +27,7 @@ with pd.ExcelWriter("{}/ESR-C_new.xlsx".format(load), engine='openpyxl', mode='w
         math = Operations(data)
         print("Processing file: {}".format(i))
         esr = math.esr()
-        cap = math.capacitance()
+        cap = math.capacitance() 
         df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
         df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
 
