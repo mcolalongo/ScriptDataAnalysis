@@ -26,13 +26,13 @@ class FileIO:
                 if i.endswith('.ndax'):
                     data_list.append(i)
             # Cool print to see all the NDAx files in the folder
-            print(f"{bcolors.BOLD}Files in the folder:{bcolors.ENDC}")
+            print("{}Files in the folder:{}".format(bcolors.BOLD,bcolors.ENDC))
             [print("{} File Name {} --> {}".format(bcolors.OKCYAN,bcolors.ENDC,data_list[i])) for i in range(len(data_list))]
             # Return the data list
             return data_list
         
         except:
-            raise IOError(f"An error occurred while reading the files in the folder {self.file_path}")
+            raise IOError("An error occurred while reading the files in the folder {}".format(self.file_path))
 
 
 
@@ -46,7 +46,7 @@ class FileIO:
             data = NewareNDA.NewareNDAx.read_ndax("{}/{}".format(self,single_path))
             return data
         except:
-            raise IOError(f"An error occurred while reading the file: {single_path}")
+            raise IOError("An error occurred while reading the file: {}".format(single_path))
 
 # Cool colors for printing in terminal
 class bcolors:

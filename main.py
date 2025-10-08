@@ -10,7 +10,7 @@ from operations import Operations
 load = filedialog.askdirectory(title="Select the folder containing the data files")
 # Call the constructor 
 file = FileIO(load)
-file_list = file.read_multiple()
+file_list = file.read_multiple() 
 
 select = input("\n\nSelect the type of analysis you want to perform: \n1. ESR-C\n2. Self-D\n--> ")
 
@@ -20,15 +20,14 @@ else:
     print("Data Analysis Started")
 
 
-
-for i in file_list:
-    data = FileIO.load_data(file.file_path, i)
-    math = Operations(data)
-    print(f"Processing file: {i}")
-    esr = math.esr()
-    cap = math.capacitance()
-    df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
-    with pd.ExcelWriter("{}/ESR-C.xlsx".format(load), engine='openpyxl', mode='a') as writer:
+with pd.ExcelWriter("{}/ESR-C_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+    for i in file_list:
+        data = FileIO.load_data(file.file_path, i)
+        math = Operations(data)
+        print("Processing file: {}".format(i))
+        esr = math.esr()
+        cap = math.capacitance()
+        df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
         df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
 
 # print("Analisi completata per tutti i file e grafici creati.")
