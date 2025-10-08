@@ -1,8 +1,6 @@
 from fileIO import FileIO
-import tkinter as tks
 from tkinter import filedialog
 import pandas as pd
-import os
 from operations import Operations
 
 
@@ -18,7 +16,7 @@ if (select=="2") or (select=="3"):
     print("At the moment the feature is not available")
     raise SystemExit
 else:
-    print("Data Analysis Started")
+    print("Data Analysis Started...")
 
 
 with pd.ExcelWriter("{}/ESR-C_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
