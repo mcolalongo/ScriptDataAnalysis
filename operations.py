@@ -91,7 +91,7 @@ class Operations:
             self.v_init = self.first_dsch['Voltage'].iloc[0] # select the first voltage value
             self.v_end = self.first_dsch['Voltage'].iloc[-1] # select the last voltage value
             self.v_ic = 0.8 * self.v_init + 0.2 * self.v_end # v_init_computed is a new value a bit more down to the discharge
-            self.close_v = abs(self.first_dsch['Voltage'] - self.v_ic) # we subtract the computed value to the voltage series --> we look for the closest values
+            self.close_v = abs(self.first_dsch['Voltage'] - self.v_ic) # we subtract the co mputed value to the voltage series --> we look for the closest values
             # as the v_ic does not exist in the series
 
             self.close_v_idx = np.argmin(self.close_v) # get the index value of the closest V value in the df from the computed one
@@ -104,6 +104,27 @@ class Operations:
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
         
         return self.cap
+    
+    def cycling(self):
+        '''
+        Method to perform analysis on cycling data 
+        '''
+        ncycles = self.data['Cycle'].unique()
+        print("{} Capacitance Calculations Running...{}".format(bcolors.WARNING, bcolors.ENDC))
+        self.results = []
+        for i in tqdm(ncycles):
+            self.dsch = self.data.loc[ (self.data.loc['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
+            self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+            self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()] / 1000 # in Ah
+            self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()] / 1000 # in Ah
+            self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()]
+            self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()]
+            self.c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+            self.results.append(self.c)
+        print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
+        
+        return self.results
+    
 
 # Cool colors for printing in terminal
 class bcolors:

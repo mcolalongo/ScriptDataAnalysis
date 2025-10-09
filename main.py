@@ -12,27 +12,37 @@ file_list = file.read_multiple()
 
 select = input("\n\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n\n--> ")
 
-if (select=="2") or (select=="3"):
+if (select=="2"):
     print("At the moment the feature is not available")
+    input("Press Enter to exit...")
     raise SystemExit
 else:
     print("Data Analysis Started...")
 
+if select=="1":
+    # Create a Pandas Excel writer using openpyxl as the engine
+    with pd.ExcelWriter("{}/ESR-C_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+        for i in file_list:
+            data = FileIO.load_data(file.file_path, i)
+            math = Operations(data)
+            print("Processing file: {}".format(i))
+            esr = math.esr()
+            cap = math.capacitance() 
+            df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
+            df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
 
-with pd.ExcelWriter("{}/ESR-C_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
-    for i in file_list:
-        data = FileIO.load_data(file.file_path, i)
-        math = Operations(data)
-        print("Processing file: {}".format(i))
-        esr = math.esr()
-        cap = math.capacitance() 
-        df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
-        df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
-
-# print("Analisi completata per tutti i file e grafici creati.")
-
-    # print(f"Processing file: {i} with {data.shape[0]} rows and {data.shape[1]} columns")
-
-# for i in tqdm(range(100)):
-    # time.sleep(1)
-
+elif select=="3":
+    # Create a Pandas Excel writer using openpyxl as the engine
+    with pd.ExcelWriter("{}/Cycling_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+        for i in file_list:
+            data = FileIO.load_data(file.file_path, i)
+            math = Operations(data)
+            print("Processing file: {}".format(i))
+            cycl = math.cycling()
+            df_full = pd.DataFrame(cycl)
+            df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=False)
+else:
+    print("Invalid Selection. Exiting...")
+    input("Press Enter to exit...")
+    raise SystemExit
+    
