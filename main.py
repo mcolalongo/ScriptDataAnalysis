@@ -38,9 +38,9 @@ elif select=="3":
             data = FileIO.load_data(file.file_path, i)
             math = Operations(data)
             print("Processing file: {}".format(i))
-            cycl = math.cycling()
-            df_full = pd.DataFrame(cycl)
-            df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=False)
+            cap = math.cycling()
+            df_full = pd.DataFrame({"Capacitance (F)" : cap})
+            df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
 else:
     print("Invalid Selection. Exiting...")
     input("Press Enter to exit...")
