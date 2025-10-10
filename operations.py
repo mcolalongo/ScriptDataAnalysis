@@ -113,14 +113,17 @@ class Operations:
         print("{} Capacitance Calculations Running...{}".format(bcolors.WARNING, bcolors.ENDC))
         self.results = []
         for i in tqdm(ncycles):
-            self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
-            self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
-            self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()] / 1000 # in Ah
-            self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()] / 1000 # in Ah
-            self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()]
-            self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()]
-            self.c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
-            self.results.append(self.c)
+            try:
+                self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
+                self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+                self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()] / 1000 # in Ah
+                self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()] / 1000 # in Ah
+                self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()]
+                self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()]
+                self.c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+                self.results.append(self.c)
+            except:
+                print("\nCycle {} not found. Skipping...".format(i))
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
         
         return self.results

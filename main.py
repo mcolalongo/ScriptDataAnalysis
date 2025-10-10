@@ -45,4 +45,6 @@ else:
     print("Invalid Selection. Exiting...")
     input("Press Enter to exit...")
     raise SystemExit
-    
+
+
+input("Script Ended. Press Enter to exit...")
