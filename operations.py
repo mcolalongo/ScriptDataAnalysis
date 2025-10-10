@@ -108,11 +108,13 @@ class Operations:
     def cycling(self):
         '''
         Method to perform analysis on cycling data 
+        For supercaps we cycle usually between 10000 to 100k cycles. To speed up the process, we skip 100 cycles at a time
+        :returns: list of capacity value
         '''
         ncycles = self.data['Cycle'].unique()
         print("{} Capacitance Calculations Running...{}".format(bcolors.WARNING, bcolors.ENDC))
         self.results = []
-        for i in tqdm(ncycles):
+        for i in tqdm(range(1,len(ncycles), 10)):
             try:
                 self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
                 self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage

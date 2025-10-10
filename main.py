@@ -10,7 +10,7 @@ load = filedialog.askdirectory(title="Select the folder containing the data file
 file = FileIO(load)
 file_list = file.read_multiple() 
 
-select = input("\n\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n\n--> ")
+select = input("\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n\n--> ")
 
 if (select=="2"):
     print("At the moment the feature is not available")
