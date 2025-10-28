@@ -114,7 +114,8 @@ class Operations:
         ncycles = self.data['Cycle'].unique()
         print("{} Capacitance Calculations Running...{}".format(bcolors.WARNING, bcolors.ENDC))
         self.results = []
-        for i in tqdm(range(1,len(ncycles), 10)):
+        # for i in tqdm(range(1,len(ncycles), 1)):
+        for i in tqdm(ncycles):
             try:
                 self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
                 self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
@@ -130,6 +131,69 @@ class Operations:
         
         return self.results
     
+    def rp(self):
+        '''
+        Method to perform analysis on Rate Performance data 
+        For supercaps we usually do rate performance at different current rates. This method will extract the capacitance
+        at different current rates. From BTS when you switch from one cycle to another there could be some issues with steps so we need to check that. If more than 2 steps 
+        are found for discharge we will take the last one
+        :returns: list of capacity and esr values from RP tests
+        '''
+        ncycles = self.data['Cycle'].unique()
+        print("{} Rate Performance Calculations Running...{}".format(bcolors.WARNING, bcolors.ENDC))
+        self.results = []
+        
+        for i in tqdm(ncycles):
+            try:
+                # preload charge and discharge data per cycle for step check. Charge is needed for ESR later
+                self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i)] # filter per no. cycle and charge capacity
+                self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
+                step_ccy = self.ch['Step'].unique()
+                step_dcy = self.dsch['Step'].unique()
+                print(f"Cycle {i}: Step {step_dcy}")
+
+                if len(step_dcy) >= 2:
+                
+                    print(f"Warning: Cycle {i} has more than 2 discharge steps!")
+                    self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i) & (self.data['Step'] == step_ccy[-1])] # filter per no. cycle and charge capacity
+                    self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i) & (self.data['Step'] == step_dcy[-1])] # filter per no. cycle and discharge capacity
+                    self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+                    self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()] / 1000 # in Ah
+                    self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()] / 1000 # in Ah
+                    self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()]
+                    self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()]
+                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+                    # ESR calculation
+                    v_dsch = self.dsch['Voltage'].iloc[0]
+                    v_ch = self.ch['Voltage'].iloc[-1]
+                    current = abs(self.dsch['Current(mA)'].iloc[0])
+                    esr = (v_ch - v_dsch)/(current/1000) # in Ohm 
+                    self.results.append([i, c, esr])
+
+                else:
+                    print(f"Cycle {i} discharge steps are OK.")
+                    self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i)] # filter per no. cycle and charge capacity
+                    self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
+                    normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+                    self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(normalized_voltage - 80)).argmin()] / 1000 # in Ah
+                    self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(normalized_voltage - 40)).argmin()] / 1000 # in Ah
+                    self.v80 = self.dsch['Voltage'].iloc[(np.abs(normalized_voltage - 80)).argmin()]
+                    self.v40 = self.dsch['Voltage'].iloc[(np.abs(normalized_voltage - 40)).argmin()]
+                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+
+                    # ESR calculation
+                    v_dsch = self.dsch['Voltage'].iloc[0]
+                    v_ch = self.ch['Voltage'].iloc[-1]
+                    current = abs(self.dsch['Current(mA)'].iloc[0])
+                    esr = (v_ch - v_dsch)/(current/1000) # in Ohm 
+                    self.results.append([i, c, esr])
+
+
+            except:
+                print("\nCycle {} not found. Skipping...".format(i))
+        print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
+        
+        return self.results
 
 # Cool colors for printing in terminal
 class bcolors:

@@ -1,6 +1,6 @@
 from fileIO import FileIO
 from tkinter import filedialog
-import pandas as pd
+import pandas as pd, numpy as np
 from operations import Operations
 
 
@@ -10,7 +10,7 @@ load = filedialog.askdirectory(title="Select the folder containing the data file
 file = FileIO(load)
 file_list = file.read_multiple() 
 
-select = input("\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n\n--> ")
+select = input("\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n4. RP\n\n--> ")
 
 if (select=="2"):
     print("At the moment the feature is not available")
@@ -41,6 +41,18 @@ elif select=="3":
             cap = math.cycling()
             df_full = pd.DataFrame({"Capacitance (F)" : cap})
             df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
+
+elif select=="4":
+    # Create a Pandas Excel writer using openpyxl as the engine
+    with pd.ExcelWriter("{}/RP_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+        for i in file_list:
+            data = FileIO.load_data(file.file_path, i)
+            math = Operations(data)
+            print("Processing file: {}".format(i))
+            rp_values = math.rp()
+            df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
+            df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
+
 else:
     print("Invalid Selection. Exiting...")
     input("Press Enter to exit...")
