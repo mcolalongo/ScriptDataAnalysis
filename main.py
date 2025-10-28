@@ -39,7 +39,7 @@ elif select=="3":
             math = Operations(data)
             print("Processing file: {}".format(i))
             cap = math.cycling()
-            df_full = pd.DataFrame({"Capacitance (F)" : cap})
+            df_full = pd.DataFrame({'Cycle' : np.array(cap)[:,0], "Capacitance (F)" : np.array(cap)[:,1], 'ESR (Ohm)': np.array(cap)[:,2]})
             df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
 
 elif select=="4":
