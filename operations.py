@@ -35,7 +35,7 @@ class Operations:
             self.v_end_dsch = self.first_dsch['Voltage'].iloc[-1]
             self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
             self.current = abs(self.first_dsch['Current(mA)'].iloc[-1])
-            self.esr_value = (self.v_end_rest - self.v_end_dsch)/(self.current/1000) # in Ohm 
+            self.esr_value = (self.v_end_rest - self.v_end_dsch)/(2*self.current/1000) # in Ohm 
             self.esr.append(self.esr_value)
 
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
@@ -66,7 +66,7 @@ class Operations:
             self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
             self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
             self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
-            self.esr_value = (self.v_end_rest - self.v_init_dsch)/(self.current/1000) # in Ohm 
+            self.esr_value = (self.v_end_rest - self.v_init_dsch)/(2*self.current/1000) # in Ohm 
             self.esr.append(self.esr_value)
 
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
@@ -130,7 +130,7 @@ class Operations:
                 v_dsch = self.dsch['Voltage'].iloc[0]
                 v_ch = self.ch['Voltage'].iloc[-1]
                 current = abs(self.dsch['Current(mA)'].iloc[0])
-                self.esr = (v_ch - v_dsch)/(current/1000) # in Ohm 
+                self.esr = (v_ch - v_dsch)/(2*current/1000) # in Ohm 
                 self.results.append([i, self.c, self.esr])
 
             except:
@@ -174,7 +174,7 @@ class Operations:
                     v_dsch = self.dsch['Voltage'].iloc[0]
                     v_ch = self.ch['Voltage'].iloc[-1]
                     current = abs(self.dsch['Current(mA)'].iloc[0])
-                    esr = (v_ch - v_dsch)/(current/1000) # in Ohm 
+                    esr = (v_ch - v_dsch)/(2*current/1000) # in Ohm 
                     self.results.append([i, c, esr])
 
                 else:
@@ -192,7 +192,7 @@ class Operations:
                     v_dsch = self.dsch['Voltage'].iloc[0]
                     v_ch = self.ch['Voltage'].iloc[-1]
                     current = abs(self.dsch['Current(mA)'].iloc[0])
-                    esr = (v_ch - v_dsch)/(current/1000) # in Ohm 
+                    esr = (v_ch - v_dsch)/(2*current/1000) # in Ohm 
                     self.results.append([i, c, esr])
 
 
