@@ -126,7 +126,7 @@ class Operations:
                 self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
                 self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()]
                 self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()]
-                c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+                self.c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
 
 
                 # ESR calculation
