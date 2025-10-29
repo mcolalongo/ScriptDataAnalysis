@@ -21,7 +21,7 @@ else:
 
 if select=="1":
     # Create a Pandas Excel writer using openpyxl as the engine
-    with pd.ExcelWriter("{}/ESR-C_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+    with pd.ExcelWriter("{}/ESR-C_new_v2.xlsx".format(load), engine='openpyxl', mode='w') as writer:
         for i in file_list:
             data = FileIO.load_data(file.file_path, i)
             math = Operations(data)
@@ -33,7 +33,7 @@ if select=="1":
 
 elif select=="3":
     # Create a Pandas Excel writer using openpyxl as the engine
-    with pd.ExcelWriter("{}/Cycling_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+    with pd.ExcelWriter("{}/Cycling_new_v2.xlsx".format(load), engine='openpyxl', mode='w') as writer:
         for i in file_list:
             data = FileIO.load_data(file.file_path, i)
             math = Operations(data)
@@ -44,7 +44,7 @@ elif select=="3":
 
 elif select=="4":
     # Create a Pandas Excel writer using openpyxl as the engine
-    with pd.ExcelWriter("{}/RP_new.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+    with pd.ExcelWriter("{}/RP_new_v2.xlsx".format(load), engine='openpyxl', mode='w') as writer:
         for i in file_list:
             data = FileIO.load_data(file.file_path, i)
             math = Operations(data)

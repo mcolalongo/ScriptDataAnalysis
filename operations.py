@@ -119,12 +119,15 @@ class Operations:
             try:
                 self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
                 self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
-                self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
-                self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()] / 1000 # in Ah
-                self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()] / 1000 # in Ah
-                self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()]
-                self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()]
-                self.c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+              # self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+                upper_volt = self.dsch['Voltage'].max()*0.8
+                lower_volt = self.dsch['Voltage'].max()*0.4
+                self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
+                self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
+                self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()]
+                self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()]
+                c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+
 
                 # ESR calculation
                 v_dsch = self.dsch['Voltage'].iloc[0]
@@ -164,11 +167,13 @@ class Operations:
                     print(f"{bcolors.HEADER}Warning:{bcolors.ENDC} Cycle {i} has more than 2 discharge steps! Last step will be considered for calculations of (F) and (Ohm).")
                     self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i) & (self.data['Step'] == step_ccy[-1])] # filter per no. cycle and charge capacity
                     self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i) & (self.data['Step'] == step_dcy[-1])] # filter per no. cycle and discharge capacity
-                    self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
-                    self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()] / 1000 # in Ah
-                    self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()] / 1000 # in Ah
-                    self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 80)).argmin()]
-                    self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.normalized_voltage - 40)).argmin()]
+                    # self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+                    upper_volt = self.dsch['Voltage'].max()*0.8
+                    lower_volt = self.dsch['Voltage'].max()*0.4
+                    self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
+                    self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
+                    self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()]
+                    self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()]
                     c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
                     # ESR calculation
                     v_dsch = self.dsch['Voltage'].iloc[0]
@@ -181,12 +186,14 @@ class Operations:
                     print(f"Cycle {i} discharge steps are OK.")
                     self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i)] # filter per no. cycle and charge capacity
                     self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
-                    normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
-                    self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(normalized_voltage - 80)).argmin()] / 1000 # in Ah
-                    self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(normalized_voltage - 40)).argmin()] / 1000 # in Ah
-                    self.v80 = self.dsch['Voltage'].iloc[(np.abs(normalized_voltage - 80)).argmin()]
-                    self.v40 = self.dsch['Voltage'].iloc[(np.abs(normalized_voltage - 40)).argmin()]
-                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+                    # self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage
+                    upper_volt = self.dsch['Voltage'].max()*0.8
+                    lower_volt = self.dsch['Voltage'].max()*0.4
+                    self.c80 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
+                    self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
+                    self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()]
+                    self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()]
+                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600 
 
                     # ESR calculation
                     v_dsch = self.dsch['Voltage'].iloc[0]
