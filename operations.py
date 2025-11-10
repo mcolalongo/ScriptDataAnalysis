@@ -163,7 +163,6 @@ class Operations:
                 step_dcy = self.dsch['Step'].unique()
 
                 if len(step_dcy) >= 2:
-                
                     print(f"{bcolors.HEADER}Warning:{bcolors.ENDC} Cycle {i} has more than 2 discharge steps! Last step will be considered for calculations of (F) and (Ohm).")
                     self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i) & (self.data['Step'] == step_ccy[-1])] # filter per no. cycle and charge capacity
                     self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i) & (self.data['Step'] == step_dcy[-1])] # filter per no. cycle and discharge capacity
@@ -183,7 +182,6 @@ class Operations:
                     self.results.append([i, c, esr])
 
                 else:
-                    print(f"Cycle {i} discharge steps are OK.")
                     self.ch = self.data.loc[(self.data['Status'] == 'CC_Chg') & (self.data['Cycle'] == i)] # filter per no. cycle and charge capacity
                     self.dsch = self.data.loc[(self.data['Status'] == 'CC_DChg') & (self.data['Cycle'] == i)] # filter per no. cycle and discharge capacity
                     # self.normalized_voltage = (self.dsch['Voltage'] - self.dsch['Voltage'].max()) / (self.dsch['Voltage'].min() - self.dsch['Voltage'].max()) * 100 # normalization of the voltage

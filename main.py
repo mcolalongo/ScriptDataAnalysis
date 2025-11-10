@@ -105,7 +105,7 @@ elif user=="2":
                 esr = math.esr()
                 cap = math.capacitance() 
                 df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
-                sheet_label = i.split("_")[1:2]
+                sheet_label = i.split("_")[1:3]
                 sheet_name = "_".join(sheet_label)
                 df_full.to_excel(writer, sheet_name="{}".format(sheet_name), index=True)
 
@@ -118,7 +118,7 @@ elif user=="2":
                 print("Processing file: {}".format(i))
                 cap = math.cycling()
                 df_full = pd.DataFrame({'Cycle' : np.array(cap)[:,0], "Capacitance (F)" : np.array(cap)[:,1], 'ESR (Ohm)': np.array(cap)[:,2]})
-                sheet_label = i.split("_")[1:2]
+                sheet_label = i.split("_")[1:3]
                 sheet_name = "_".join(sheet_label)
                 df_full.to_excel(writer, sheet_name="{}".format(sheet_name), index=True)
 
@@ -131,7 +131,7 @@ elif user=="2":
                 print("Processing file: {}".format(i))
                 rp_values = math.rp()
                 df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
-                sheet_label = i.split("_")[1:2]
+                sheet_label = i.split("_")[1:3]
                 sheet_name = "_".join(sheet_label)
                 df_full.to_excel(writer, sheet_name="{}".format(sheet_name), index=True)
 
@@ -144,7 +144,7 @@ elif user=="2":
                 print("Processing file: {}".format(i))
                 rp_values = math.floating()
                 df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
-                sheet_label = i.split("_")[1:2]
+                sheet_label = i.split("_")[1:3]
                 sheet_name = "_".join(sheet_label)
                 df_full.to_excel(writer, sheet_name="{}".format(sheet_name), index=True)
                 # df_full.to_excel(writer, sheet_name="{}".format(i), index=True)
@@ -156,10 +156,6 @@ elif user=="2":
 
 
     input("Script Ended. Press Enter to exit...")   
-
-
-
-
 
 
 elif user in ["3", "4", "5"]:
