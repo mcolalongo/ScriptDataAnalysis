@@ -10,7 +10,7 @@ load = filedialog.askdirectory(title="Select the folder containing the data file
 file = FileIO(load)
 file_list = file.read_multiple() 
 
-user = input("\nSelect the User name: \n1. Cristina\n2. Raffaele\n3. Valentina\n4. Batman\n5. IlSignoreOscuro\n\n--> ")
+user = input("\nSelect the User name: \n1. Cristina\n2. Raffaele\n3. Valentina\n4. Batman\n\n--> ")
 
 
 if user=="1":
@@ -142,7 +142,7 @@ elif user=="2":
                 data = FileIO.load_data(file.file_path, i)
                 math = Operations(data)
                 print("Processing file: {}".format(i))
-                rp_values = math.floating()
+                rp_values = math.floating_raffaele()
                 df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
                 sheet_label = i.split("_")[1:3]
                 sheet_name = "_".join(sheet_label)
