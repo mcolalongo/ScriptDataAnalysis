@@ -209,9 +209,8 @@ elif user=="4":
                 print("Processing file: {}".format(i))
                 rp_values = math.floating_noela()
                 df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
-                sheet_label = i.split("_")[1:3]
-                sheet_name = "_".join(sheet_label)
-                df_full.to_excel(writer, sheet_name="{}".format(sheet_name), index=True)
+                sheet_label = i.split("_")[-1].split(".")[0]
+                df_full.to_excel(writer, sheet_name="{}".format(sheet_label), index=True)
                 # df_full.to_excel(writer, sheet_name="{}".format(i), index=True)
 
 

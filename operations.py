@@ -66,7 +66,7 @@ class Operations:
             self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
             self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
             self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
-            self.esr_value = (self.v_end_rest - self.v_init_dsch)/(2*self.current/1000) # in Ohm 
+            self.esr_value = (self.v_end_rest - self.v_init_dsch)/(self.current/1000) # in Ohm 
             self.esr.append(self.esr_value)
 
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
@@ -333,7 +333,7 @@ class Operations:
 
 
 
-def floating_noela (self):
+    def floating_noela (self):
         '''
         Method to calculate the Capacitance an Equivalent Series Resistance (ESR) from the floating data. It follows the Noela's approach, which is slightly different from the Cristina one.
         Floating routine is initial 6 ESR-C tests then @ cycle 7 there is a CV. Cycle > 7 still ESR-C tests 
@@ -352,47 +352,50 @@ def floating_noela (self):
         # filter only rest values
         # rest_data = self.data.loc[self.data['Status'] == 'Rest']
         for i in ncycles:
-            if i < 4:
-                # A sol id reference point is the column Step_index in the NDAX file. We could use that for referencing First Discharge Cycle and Rest            
-                self.filter_cycle = self.data.loc[self.data['Cycle'] == i]
-                # First Step Discharge Step Index
-                self.first_dsch = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 5]             
-                self.mid_rest = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 4]
-                self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
-                self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
-                self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
-                self.esr_value = (self.v_end_rest - self.v_init_dsch)/(self.current/1000) # in Ohm 
+            try:
+                if i < 4:
+                    # A sol id reference point is the column Step_index in the NDAX file. We could use that for referencing First Discharge Cycle and Rest            
+                    self.filter_cycle = self.data.loc[self.data['Cycle'] == i]
+                    # First Step Discharge Step Index
+                    self.first_dsch = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 5]             
+                    self.mid_rest = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 4]
+                    self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
+                    self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
+                    self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
+                    self.esr_value = (self.v_end_rest - self.v_init_dsch)/(self.current/1000) # in Ohm 
 
-                # Capacitance
-                upper_volt = self.first_dsch['Voltage'].max()*0.8
-                lower_volt = self.first_dsch['Voltage'].max()*0.4
-                self.c80 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
-                self.c40 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
-                self.v80 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()]
-                self.v40 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()]
-                c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600 
-                self.floating.append([i, c, self.esr_value])
+                    # Capacitance
+                    upper_volt = self.first_dsch['Voltage'].max()*0.8
+                    lower_volt = self.first_dsch['Voltage'].max()*0.4
+                    self.c80 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
+                    self.c40 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
+                    self.v80 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()]
+                    self.v40 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()]
+                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600 
+                    self.floating.append([i, c, self.esr_value])
 
-            elif i > 4:
-                # A solid reference point is the column Step_index in the NDAX file. We could use that for referencing First Discharge Cycle and Rest            
-                self.filter_cycle = self.data.loc[self.data['Cycle'] == i]
-                # First Step Discharge Step Index
-                self.first_dsch = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 17]             
-                self.mid_rest = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 16]
-                self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
-                self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
-                self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
-                self.esr_value = (self.v_end_rest - self.v_init_dsch)/(self.current/1000) # in Ohm 
+                elif i > 4:
+                    # A solid reference point is the column Step_index in the NDAX file. We could use that for referencing First Discharge Cycle and Rest            
+                    self.filter_cycle = self.data.loc[self.data['Cycle'] == i]
+                    # First Step Discharge Step Index
+                    self.first_dsch = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 17]             
+                    self.mid_rest = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 16]
+                    self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
+                    self.v_end_rest = self.mid_rest['Voltage'].iloc[-1]
+                    self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
+                    self.esr_value = (self.v_end_rest - self.v_init_dsch)/(self.current/1000) # in Ohm 
 
-                # Capacitance
-                upper_volt = self.first_dsch['Voltage'].max()*0.8
-                lower_volt = self.first_dsch['Voltage'].max()*0.4
-                self.c80 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
-                self.c40 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
-                self.v80 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()]
-                self.v40 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()]
-                c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600 
-                self.floating.append([i, c, self.esr_value])
+                    # Capacitance
+                    upper_volt = self.first_dsch['Voltage'].max()*0.8
+                    lower_volt = self.first_dsch['Voltage'].max()*0.4
+                    self.c80 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
+                    self.c40 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
+                    self.v80 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()]
+                    self.v40 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()]
+                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600 
+                    self.floating.append([i, c, self.esr_value])
+            except:
+                print("\nCycle {} not found. Skipping...".format(i))
 
 
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
