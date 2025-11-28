@@ -191,12 +191,14 @@ class Operations:
                     self.c40 = self.dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
                     self.v80 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - upper_volt)).argmin()]
                     self.v40 = self.dsch['Voltage'].iloc[(np.abs(self.dsch['Voltage'] - lower_volt)).argmin()]
-                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600 
+                    c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
 
                     # ESR calculation
                     v_dsch = self.dsch['Voltage'].iloc[0]
                     v_ch = self.ch['Voltage'].iloc[-1]
-                    current = abs(self.dsch['Current(mA)'].iloc[0])
+                    
+                    current = abs(self.dsch['Current(mA)'].iloc[30]) # to avoid issues with current spikes at the beginning of the step
+                    print(v_ch, v_dsch, current)
                     esr = (v_ch - v_dsch)/(2*current/1000) # in Ohm 
                     self.results.append([i, c, esr])
 

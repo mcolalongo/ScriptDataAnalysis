@@ -1,0 +1,3 @@
+2025-11-26 10:46:13,839 INFO __init__: Potentiostat control object initiated
+2025-11-26 10:46:15,942 ERROR connect_to_xct_server: Connection refused. Is PtcServer running?
+2025-11-26 10:46:15,982 ERROR <module>: Potentiostat or PtcServer not running, exiting...

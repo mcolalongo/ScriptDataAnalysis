@@ -168,7 +168,7 @@ elif user=="4":
                 math = Operations(data)
                 print("Processing file: {}".format(i))
                 esr = math.esr()
-                cap = math.capacitance() 
+                cap = math.capacitance()  
                 df_full = pd.DataFrame({"ESR (Ohm)" : esr, "Cap (F)" : cap})
                 sheet_label = i.split("_")[1:3]
                 sheet_name = "_".join(sheet_label)
