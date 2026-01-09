@@ -15,7 +15,7 @@ user = input("\nSelect the User name: \n1. Cristina\n2. Raffaele\n3. Valentina\n
 
 if user=="1":
     print("Hello Cristina, welcome back!\n")
-    select = input("\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n4. RP\n5. Floating\n\n--> ")
+    select = input("\nSelect the number of analysis you want to perform: \n1. ESR-C\n2. Self-D\n3. Cycling\n4. RP\n5. Floating\n6. Floating SLP\n\n--> ")
 
     if (select=="2"):
         print("At the moment the feature is not available")
@@ -67,6 +67,18 @@ if user=="1":
                 math = Operations(data)
                 print("Processing file: {}".format(i))
                 rp_values = math.floating()
+                df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
+                df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
+                # df_full.to_excel(writer, sheet_name="{}".format(i), index=True)
+    
+    elif select=="6":
+        # Create a Pandas Excel writer using openpyxl as the engine
+        with pd.ExcelWriter("{}/Floating_new_SLP.xlsx".format(load), engine='openpyxl', mode='w') as writer:
+            for i in file_list:
+                data = FileIO.load_data(file.file_path, i)
+                math = Operations(data)
+                print("Processing file: {}".format(i))
+                rp_values = math.floatingSLP()
                 df_full = pd.DataFrame({'Cycle' : np.array(rp_values)[:,0], "Capacitance (F)" : np.array(rp_values)[:,1], 'ESR (Ohm)': np.array(rp_values)[:,2]})
                 df_full.to_excel(writer, sheet_name="{}".format(i.split("_")[1]), index=True)
                 # df_full.to_excel(writer, sheet_name="{}".format(i), index=True)

@@ -4,11 +4,13 @@ from tqdm import tqdm
 
 class Operations:
 
+
     def __init__(self, data):
         '''
         Initialize the Math class. The Constructor stores the data to be processed.
         '''
         self.data = data # Most likely this is going to be a pandas dataframe because loaded with NewareNDA lib
+
 
     def esr_old (self):
         '''
@@ -41,7 +43,8 @@ class Operations:
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
 
         return self.esr
-    
+
+
     def esr (self):
         '''
         Method to calculate the Equivalent Series Resistance (ESR) from the data.
@@ -74,6 +77,7 @@ class Operations:
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
 
         return self.esr
+
 
     def capacitance(self):
         '''
@@ -109,6 +113,7 @@ class Operations:
         
         return self.cap
     
+
     def cycling(self):
         '''
         Method to perform analysis on cycling data 
@@ -146,6 +151,7 @@ class Operations:
         
         return self.results
     
+
     def rp(self):
         '''
         Method to perform analysis on Rate Performance data 
@@ -290,6 +296,67 @@ class Operations:
         return self.floating
     
 
+    def floatingSLP (self):
+        '''
+        Method to calculate the Capacitance an Equivalent Series Resistance (ESR) from the floating data. This function differs from the previous one as it is designed for SLP files where the Step_Index are different.
+        This is caused by the presence of the SLP steps in the cycling profile when CG had to reshape SLP.
+        Floating routine is initial 10 ESR-C tests then @ cycle 11 there is a CV. Cycle > 11 still ESR-C tests 
+        Floating routines were developed and used mostly from PA, AF and LS
+        :returns: dataframe of esr and 
+        capacitance in floating tests
+        '''
+        # look for the number of cycles
+        allcycles = self.data['Cycle'].unique()
+        print("{}Floating Calculations running...{}".format(bcolors.WARNING,bcolors.ENDC))
+        self.floating = []
+
+        # clean ncycles with CV_Chg
+        cvcycles = self.data['Cycle'].loc[self.data['Status'] == 'CV_Chg'].unique()
+        ncycles = [x for x in allcycles if x not in cvcycles]
+        # filter only rest values
+        # rest_data = self.data.loc[self.data['Status'] == 'Rest']
+        for i in ncycles:
+            try:
+                # A sol id reference point is the column Step_index in the NDAX file. We could use that for referencing First Discharge Cycle and Rest            
+                self.filter_cycle = self.data.loc[self.data['Cycle'] == i]
+                # First Step Discharge Step Index
+                self.first_dsch = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 4]             
+                self.last_chg = self.filter_cycle.loc[self.filter_cycle['Step_Index'] == 3]
+                self.v_init_dsch = self.first_dsch['Voltage'].iloc[0]
+                self.v_end_chg = self.last_chg['Voltage'].iloc[-1]
+                self.current = abs(self.first_dsch['Current(mA)'].iloc[0])
+                esr_value = (self.v_end_chg - self.v_init_dsch)/(2*self.current/1000) # in Ohm 
+
+                # Capacitance
+                normalized_volt = (self.first_dsch['Voltage'] - self.first_dsch['Voltage'].min())/(self.first_dsch['Voltage'].max()-self.first_dsch['Voltage'].min())
+                upper_volt = 0.8 
+                lower_volt = 0.4
+                upper_volt_idx = (np.abs(normalized_volt - upper_volt)).argmin()
+                lower_volt_idx = (np.abs(normalized_volt - lower_volt)).argmin()
+                self.v80 = self.first_dsch['Voltage'].iloc[upper_volt_idx]
+                self.v40 = self.first_dsch['Voltage'].iloc[lower_volt_idx]
+                self.c80 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[upper_volt_idx] / 1000 # in Ah
+                self.c40 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[lower_volt_idx] / 1000 # in Ah
+
+                # upper_volt = self.first_dsch['Voltage'].max()*0.8
+                # lower_volt = self.first_dsch['Voltage'].max()*0.4
+                # self.c80 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()] / 1000 # in Ah
+                # self.c40 = self.first_dsch['Discharge_Capacity(mAh)'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()] / 1000 # in Ah
+                # self.v80 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - upper_volt)).argmin()]
+                # self.v40 = self.first_dsch['Voltage'].iloc[(np.abs(self.first_dsch['Voltage'] - lower_volt)).argmin()]
+                c = (self.c80 - self.c40) / (self.v40 - self.v80) * 3600
+                if np.isnan(c):
+                    c = 0
+
+                self.floating.append([i, c, esr_value])
+
+            except:
+                print("\nCycle {} not found. Skipping...".format(i))
+
+        print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
+
+        return self.floating
+
     def floating_raffaele (self):
         '''
         Method to calculate the Capacitance an Equivalent Series Resistance (ESR) from the floating data. It follows the Raffaele's approach, which is slightly different from the Cristina one.
@@ -339,7 +406,6 @@ class Operations:
         print("{}Success!!!{}".format(bcolors.OKGREEN, bcolors.ENDC))
 
         return self.floating
-
 
 
     def floating_noela (self):
